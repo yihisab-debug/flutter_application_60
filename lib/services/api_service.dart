@@ -3,27 +3,23 @@ import 'package:http/http.dart' as http;
 import '../models/product.dart';
 
 class ApiService {
-  static const String _baseUrl = 'https://api.escuelajs.co/api/v1';
+  static const String _baseUrl = 'https://jsonplaceholder.typicode.com';
 
-  // ─── GET /products ───
-  // Получить все продукты
   static Future<List<Product>> fetchProducts() async {
-    final response = await http.get(Uri.parse('$_baseUrl/products'));
+    final response = await http.get(Uri.parse('$_baseUrl/posts'));
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
     return data.map((json) => Product.fromJson(json)).toList();
   }
 
-  // ─── GET /products?offset=0&limit=10 ───
-  // Пагинация
   static Future<List<Product>> fetchProductsPaginated({
     required int offset,
     required int limit,
   }) async {
-    final uri = Uri.parse('$_baseUrl/products').replace(
+    final uri = Uri.parse('$_baseUrl/posts').replace(
       queryParameters: {
-        'offset': offset.toString(),
-        'limit': limit.toString(),
+        '_start': offset.toString(),
+        '_limit': limit.toString(),
       },
     );
     final response = await http.get(uri);
@@ -32,53 +28,44 @@ class ApiService {
     return data.map((json) => Product.fromJson(json)).toList();
   }
 
-  // ─── GET /products/{id} ───
-  // Получить продукт по ID
   static Future<Product> fetchProductById(int id) async {
-    final response = await http.get(Uri.parse('$_baseUrl/products/$id'));
+    final response = await http.get(Uri.parse('$_baseUrl/posts/$id'));
     _checkResponse(response);
     return Product.fromJson(json.decode(response.body));
   }
 
-  // ─── GET /products/slug/{slug} ───
-  // Получить продукт по slug
-  static Future<Product> fetchProductBySlug(String slug) async {
-    final response =
-        await http.get(Uri.parse('$_baseUrl/products/slug/$slug'));
+  static Future<List<Product>> fetchProductsByUserId(int userId) async {
+    final uri = Uri.parse('$_baseUrl/posts').replace(
+      queryParameters: {'userId': userId.toString()},
+    );
+    final response = await http.get(uri);
     _checkResponse(response);
-    return Product.fromJson(json.decode(response.body));
+    final List<dynamic> data = json.decode(response.body);
+    return data.map((json) => Product.fromJson(json)).toList();
   }
 
-  // ─── POST /products ───
-  // Создать новый продукт
   static Future<Product> createProduct({
     required String title,
-    required int price,
-    required String description,
-    required int categoryId,
-    required List<String> images,
+    required String body,
+    required int userId,
   }) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/products'),
+      Uri.parse('$_baseUrl/posts'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'title': title,
-        'price': price,
-        'description': description,
-        'categoryId': categoryId,
-        'images': images,
+        'body': body,
+        'userId': userId,
       }),
     );
     _checkResponse(response);
     return Product.fromJson(json.decode(response.body));
   }
 
-  // ─── PUT /products/{id} ───
-  // Обновить продукт
   static Future<Product> updateProduct(
       int id, Map<String, dynamic> fields) async {
     final response = await http.put(
-      Uri.parse('$_baseUrl/products/$id'),
+      Uri.parse('$_baseUrl/posts/$id'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(fields),
     );
@@ -86,36 +73,52 @@ class ApiService {
     return Product.fromJson(json.decode(response.body));
   }
 
-  // ─── DELETE /products/{id} ───
-  // Удалить продукт
+  static Future<Product> patchProduct(
+      int id, Map<String, dynamic> fields) async {
+    final response = await http.patch(
+      Uri.parse('$_baseUrl/posts/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(fields),
+    );
+    _checkResponse(response);
+    return Product.fromJson(json.decode(response.body));
+  }
+
   static Future<bool> deleteProduct(int id) async {
-    final response =
-        await http.delete(Uri.parse('$_baseUrl/products/$id'));
+    final response = await http.delete(Uri.parse('$_baseUrl/posts/$id'));
     _checkResponse(response);
-    return json.decode(response.body) == true;
+
+    return response.statusCode == 200;
   }
 
-  // ─── GET /products/{id}/related ───
-  // Похожие продукты по ID
-  static Future<List<Product>> fetchRelatedProducts(int id) async {
-    final response =
-        await http.get(Uri.parse('$_baseUrl/products/$id/related'));
-    _checkResponse(response);
-    final List<dynamic> data = json.decode(response.body);
-    return data.map((json) => Product.fromJson(json)).toList();
-  }
+  static Future<List<Product>> fetchRelatedProducts(int productId) async {
 
-  // ─── GET /products/slug/{slug}/related ───
-  // Похожие продукты по slug
-  static Future<List<Product>> fetchRelatedBySlug(String slug) async {
-    final response =
-        await http.get(Uri.parse('$_baseUrl/products/slug/$slug/related'));
+    final product = await fetchProductById(productId);
+    
+    final uri = Uri.parse('$_baseUrl/posts').replace(
+      queryParameters: {'userId': product.userId.toString()},
+    );
+    final response = await http.get(uri);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
-    return data.map((json) => Product.fromJson(json)).toList();
+    
+    return data
+        .map((json) => Product.fromJson(json))
+        .where((p) => p.id != productId)
+        .toList();
   }
 
-  // ─── Проверка ответа ───
+  static Future<List<Map<String, dynamic>>> fetchUsers() async {
+    final response = await http.get(Uri.parse('$_baseUrl/users'));
+    _checkResponse(response);
+    final List<dynamic> data = json.decode(response.body);
+    return data.map((user) => {
+      'id': user['id'],
+      'name': user['name'],
+      'username': user['username'],
+    }).toList();
+  }
+
   static void _checkResponse(http.Response response) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');

@@ -3,7 +3,7 @@ import '../models/product.dart';
 import '../services/api_service.dart';
 
 class ProductFormScreen extends StatefulWidget {
-  final Product? product; // null = создание, не null = редактирование
+  final Product? product;
 
   const ProductFormScreen({super.key, this.product});
 
@@ -16,10 +16,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   bool _isSubmitting = false;
 
   late final TextEditingController _titleCtrl;
-  late final TextEditingController _priceCtrl;
-  late final TextEditingController _descriptionCtrl;
-  late final TextEditingController _categoryIdCtrl;
-  late final TextEditingController _imagesCtrl;
+  late final TextEditingController _bodyCtrl;
+  late final TextEditingController _userIdCtrl;
 
   bool get isEditing => widget.product != null;
 
@@ -28,23 +26,17 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     super.initState();
     final p = widget.product;
     _titleCtrl = TextEditingController(text: p?.title ?? '');
-    _priceCtrl = TextEditingController(
-        text: p != null ? p.price.toInt().toString() : '');
-    _descriptionCtrl = TextEditingController(text: p?.description ?? '');
-    _categoryIdCtrl = TextEditingController(
-        text: (p?.category?.id ?? 1).toString());
-    _imagesCtrl = TextEditingController(
-      text: p?.images.join('\n') ?? 'https://placehold.co/600x400',
+    _bodyCtrl = TextEditingController(text: p?.body ?? '');
+    _userIdCtrl = TextEditingController(
+      text: (p?.userId ?? 1).toString(),
     );
   }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
-    _priceCtrl.dispose();
-    _descriptionCtrl.dispose();
-    _categoryIdCtrl.dispose();
-    _imagesCtrl.dispose();
+    _bodyCtrl.dispose();
+    _userIdCtrl.dispose();
     super.dispose();
   }
 
@@ -54,28 +46,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final images = _imagesCtrl.text
-          .split('\n')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList();
-
       if (isEditing) {
-        // PUT /products/{id}
+
         await ApiService.updateProduct(widget.product!.id, {
+          'id': widget.product!.id,
           'title': _titleCtrl.text.trim(),
-          'price': int.tryParse(_priceCtrl.text.trim()) ?? 0,
-          'description': _descriptionCtrl.text.trim(),
-          'images': images,
+          'body': _bodyCtrl.text.trim(),
+          'userId': int.tryParse(_userIdCtrl.text.trim()) ?? 1,
         });
       } else {
-        // POST /products
+
         await ApiService.createProduct(
           title: _titleCtrl.text.trim(),
-          price: int.tryParse(_priceCtrl.text.trim()) ?? 0,
-          description: _descriptionCtrl.text.trim(),
-          categoryId: int.tryParse(_categoryIdCtrl.text.trim()) ?? 1,
-          images: images,
+          body: _bodyCtrl.text.trim(),
+          userId: int.tryParse(_userIdCtrl.text.trim()) ?? 1,
         );
       }
 
@@ -83,8 +67,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(isEditing
-                ? '✅ Продукт обновлён'
-                : '✅ Продукт создан'),
+                ? '✅ Пост обновлён'
+                : '✅ Пост создан'),
             backgroundColor: Colors.green,
           ),
         );
@@ -105,8 +89,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(isEditing ? 'Редактировать продукт' : 'Новый продукт'),
+        title: Text(isEditing ? 'Редактировать пост' : 'Новый пост'),
+        elevation: 2,
       ),
       body: Form(
         key: _formKey,
@@ -115,83 +99,110 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Title
+
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+
+                child: Row(
+                  children: [
+
+                    Icon(Icons.info_outline, color: Colors.blue.shade700),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: Text(
+                        isEditing
+                            ? 'PUT /posts/${widget.product!.id}'
+                            : 'POST /posts',
+                        style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               TextFormField(
                 controller: _titleCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Название (title)',
-                  prefixIcon: Icon(Icons.title),
-                  border: OutlineInputBorder(),
+
+                decoration: InputDecoration(
+                  labelText: 'Заголовок поста',
+                  hintText: 'Введите заголовок',
+                  prefixIcon: const Icon(Icons.title),
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
                 ),
+
+                maxLines: 2,
                 validator: _required,
+                textCapitalization: TextCapitalization.sentences,
               ),
+
               const SizedBox(height: 16),
 
-              // Price
               TextFormField(
-                controller: _priceCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Цена (price)',
-                  prefixIcon: Icon(Icons.attach_money),
-                  border: OutlineInputBorder(),
+                controller: _bodyCtrl,
+
+                decoration: InputDecoration(
+                  labelText: 'Содержимое поста',
+                  hintText: 'Введите текст поста',
+                  prefixIcon: const Icon(Icons.article),
+                  border: const OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
                 ),
+
+                maxLines: 8,
+                validator: _required,
+                textCapitalization: TextCapitalization.sentences,
+              ),
+
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _userIdCtrl,
+
+                decoration: InputDecoration(
+                  labelText: 'ID пользователя',
+                  hintText: 'От 1 до 10',
+                  prefixIcon: const Icon(Icons.person),
+                  border: const OutlineInputBorder(),
+                  helperText: 'ID пользователя (обычно от 1 до 10)',
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                ),
+
                 keyboardType: TextInputType.number,
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Обязательное поле';
-                  if (int.tryParse(v.trim()) == null) return 'Введите число';
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Обязательное поле';
+                  }
+                  final num = int.tryParse(v.trim());
+                  if (num == null) {
+                    return 'Введите число';
+                  }
+                  if (num < 1 || num > 10) {
+                    return 'Обычно используются ID от 1 до 10';
+                  }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
 
-              // Description
-              TextFormField(
-                controller: _descriptionCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Описание (description)',
-                  prefixIcon: Icon(Icons.description),
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                ),
-                maxLines: 4,
-                validator: _required,
-              ),
-              const SizedBox(height: 16),
-
-              // Category ID
-              TextFormField(
-                controller: _categoryIdCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'ID категории (categoryId)',
-                  prefixIcon: Icon(Icons.category),
-                  border: OutlineInputBorder(),
-                  helperText: 'Должен существовать в /categories',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Обязательное поле';
-                  if (int.tryParse(v.trim()) == null) return 'Введите число';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Images
-              TextFormField(
-                controller: _imagesCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Изображения (по 1 URL на строку)',
-                  prefixIcon: Icon(Icons.image),
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                  helperText: 'Каждый URL на новой строке',
-                ),
-                maxLines: 4,
-                validator: _required,
-              ),
               const SizedBox(height: 32),
 
-              // Кнопка
               ElevatedButton.icon(
                 onPressed: _isSubmitting ? null : _submit,
                 icon: _isSubmitting
@@ -200,24 +211,60 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
+
                     : Icon(isEditing ? Icons.save : Icons.add),
+
                 label: Text(
-                    isEditing ? 'Сохранить изменения' : 'Создать продукт'),
+                  isEditing ? 'Сохранить изменения' : 'Создать пост',
+                  style: const TextStyle(fontSize: 16),
+                ),
+
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey,
+                  elevation: 2,
                 ),
               ),
-              const SizedBox(height: 12),
 
-              // Подсказка
-              Text(
-                isEditing
-                    ? 'PUT /products/${widget.product!.id}'
-                    : 'POST /products',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.grey, fontStyle: FontStyle.italic),
+              const SizedBox(height: 16),
+
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber.shade200),
+                ),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Icon(Icons.warning_amber, color: Colors.amber.shade700),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+
+                      child: Text(
+                        'JSONPlaceholder — это fake REST API для тестирования. '
+                        'Запросы POST, PUT, DELETE будут симулированы, но данные '
+                        'не сохранятся на сервере.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.amber.shade900,
+                        ),
+                      ),
+                  
+                    ),
+
+                  ],
+                ),
+
               ),
+              
             ],
           ),
         ),

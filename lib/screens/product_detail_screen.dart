@@ -30,7 +30,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Продукт #${widget.productId}'),
+        title: Text('Пост #${widget.productId}'),
       ),
       body: FutureBuilder<Product>(
         future: _product,
@@ -40,6 +40,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           }
           if (snapshot.hasError) {
             return Center(
+
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -71,77 +72,78 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildContent(Product product) {
-
-    final validImages =
-        product.images.where((url) => url.startsWith('http')).toList();
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          SizedBox(
-            height: 280,
-            child: validImages.isNotEmpty
-                ? PageView.builder(
-                    itemCount: validImages.length,
-                    itemBuilder: (context, index) {
-                      return Stack(
-                        fit: StackFit.expand,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.shade400,
+                  Colors.blue.shade600,
+                ],
+              ),
+            ),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Row(
+                  children: [
+
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Text(
+                        'U${product.userId}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 16),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                          Image.network(
-                            validImages[index],
-                            fit: BoxFit.cover,
-
-                            errorBuilder: (_, __, ___) => Container(
-                              color: Colors.grey.shade200,
-
-                              child: const Icon(Icons.broken_image,
-                                  size: 64, color: Colors.grey),
-
+                          const Text(
+                            'Автор поста',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
                             ),
                           ),
 
-                          if (validImages.length > 1)
-
-                            Positioned(
-                              bottom: 8,
-                              right: 8,
-
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-
-                                child: Text(
-                                  '${index + 1}/${validImages.length}',
-
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 12),
-
-                                ),
-
-                              ),
+                          Text(
+                            'User ${product.userId}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+
                         ],
-                      );
-                    },
-                  )
-
-                : Container(
-                    color: Colors.grey.shade200,
-
-                    child: const Center(
-                      child: Icon(Icons.image, size: 64, color: Colors.grey),
+                      ),
                     ),
 
-                  ),
-
+                  ],
+                ),
+              ],
+            ),
           ),
 
           Padding(
@@ -150,97 +152,98 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                if (product.category != null)
-
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-
-                    decoration: BoxDecoration(
-                      color: Colors.teal.shade50,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-
-                    child: Text(
-                      product.category!.name,
-                      style: TextStyle(color: Colors.teal.shade700),
-                    ),
-
-                  ),
-
-                const SizedBox(height: 12),
-
                 Text(
                   product.title,
                   style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 4),
-
-                Text(
-                  'slug: ${product.slug}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  '\$${product.price.toStringAsFixed(2)}',
-
-                  style: const TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
                   ),
-
-                ),
-
-                const SizedBox(height: 20),
-
-                const Text(
-                  'Описание',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 8),
 
-                Text(product.description, style: const TextStyle(fontSize: 15)),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Post ID: ${product.id}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
+                const Text(
+                  'Содержимое',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+
+                  child: Text(
+                    product.body,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.6,
+                    ),
+                  ),
+
+                ),
+
+                const SizedBox(height: 24),
 
                 Card(
+                  elevation: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        const Text('Информация',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        const Text(
+                          'Информация',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
 
                         const Divider(),
-
-                        _infoRow('ID', product.id.toString()),
-
-                        _infoRow('Slug', product.slug),
-
+                        _infoRow('ID поста', product.id.toString()),
+                        _infoRow('ID автора', product.userId.toString()),
                         _infoRow(
-                            'Категория', product.category?.name ?? '—'),
-
-                        _infoRow('ID категории',
-                            product.category?.id.toString() ?? '—'),
-
-                        _infoRow('Изображений',
-                            product.images.length.toString()),
+                          'Длина текста',
+                          '${product.body.length} символов',
+                        ),
 
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 Row(
                   children: [
@@ -257,10 +260,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                           if (result == true) setState(() => _load());
                         },
-
                         icon: const Icon(Icons.edit),
-
                         label: const Text('Редактировать'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
                       ),
                     ),
 
@@ -277,16 +281,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ),
-
                         icon: const Icon(Icons.link),
-
                         label: const Text('Похожие'),
-
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
                       ),
                     ),
 
                   ],
                 ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _confirmDelete(product),
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text('Удалить пост'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+
               ],
             ),
           ),
@@ -297,21 +317,88 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _infoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
 
           SizedBox(
             width: 120,
-            child: Text(label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w500, color: Colors.grey)),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
           ),
 
-          Expanded(child: Text(value)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(Product product) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Удалить пост?'),
+        content: Text('Вы уверены, что хотите удалить "${product.title}"?'),
+        actions: [
+
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Отмена'),
+          ),
+
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _deleteProduct(product);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Удалить'),
+          ),
           
         ],
       ),
     );
+  }
+
+  Future<void> _deleteProduct(Product product) async {
+    try {
+      final deleted = await ApiService.deleteProduct(product.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              deleted ? '✅ Пост удалён' : '⚠️ Не удалось удалить',
+            ),
+            backgroundColor: deleted ? Colors.green : Colors.orange,
+          ),
+        );
+        if (deleted) {
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

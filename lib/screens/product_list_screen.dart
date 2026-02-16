@@ -3,7 +3,7 @@ import '../models/product.dart';
 import '../services/api_service.dart';
 import 'product_detail_screen.dart';
 import 'product_form_screen.dart';
-import 'search_slug_screen.dart';
+import 'search_user_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -35,7 +35,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.dispose();
   }
 
-  // Автоматическая подгрузка при прокрутке
   void _onScroll() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 200 &&
@@ -45,7 +44,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
-  // GET /products?offset=X&limit=10
   Future<void> _loadPage() async {
     if (_isLoading) return;
     setState(() {
@@ -72,7 +70,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
-  // Полное обновление списка
   Future<void> _refresh() async {
     setState(() {
       _products.clear();
@@ -82,7 +79,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     await _loadPage();
   }
 
-  // DELETE /products/{id}
   Future<void> _deleteProduct(Product product) async {
     try {
       final deleted = await ApiService.deleteProduct(product.id);
@@ -112,25 +108,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Platzi Products'),
+        title: const Text('JSONPlaceholder Posts'),
         actions: [
-          // Поиск по slug
+
           IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Поиск по slug',
+            icon: const Icon(Icons.person_search),
+            tooltip: 'Поиск по User ID',
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const SearchSlugScreen()),
+              MaterialPageRoute(builder: (_) => const SearchUserScreen()),
             ),
           ),
-          // Обновить
+
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refresh,
           ),
         ],
       ),
-      // Кнопка создания нового продукта
+
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final created = await Navigator.push<bool>(
@@ -146,26 +142,31 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildBody() {
-    // Первая загрузка
+   
     if (_products.isEmpty && _isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Ошибка при пустом списке
     if (_products.isEmpty && _error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+
             Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+
             const SizedBox(height: 16),
+
             Text(_error!, textAlign: TextAlign.center),
+
             const SizedBox(height: 16),
+
             ElevatedButton.icon(
               onPressed: _refresh,
               icon: const Icon(Icons.refresh),
               label: const Text('Повторить'),
             ),
+
           ],
         ),
       );
@@ -175,7 +176,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       onRefresh: _refresh,
       child: Column(
         children: [
-          // Информационная строка
+
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -186,14 +187,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ),
-          // Список продуктов
+
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.only(bottom: 80),
               itemCount: _products.length + (_hasMore ? 1 : 0),
               itemBuilder: (context, index) {
-                // Индикатор загрузки в конце списка
+
                 if (index == _products.length) {
                   return const Padding(
                     padding: EdgeInsets.all(24),
@@ -204,6 +205,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               },
             ),
           ),
+
         ],
       ),
     );
@@ -212,75 +214,105 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget _buildProductCard(Product product) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _openDetail(product),
-        child: Row(
-          children: [
-            // Картинка
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: product.image.startsWith('http')
-                  ? Image.network(
-                      product.image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _placeholder(),
-                    )
-                  : _placeholder(),
-            ),
-            // Информация
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              CircleAvatar(
+                backgroundColor: Colors.blue.shade100,
+                child: Text(
+                  'U${product.userId}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade700,
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    
                     Text(
                       product.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    if (product.category != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.teal.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          product.category!.name,
-                          style: TextStyle(
-                              fontSize: 11, color: Colors.teal.shade700),
-                        ),
-                      ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '\$${product.price.toStringAsFixed(2)}',
                       style: const TextStyle(
-                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        fontSize: 16,
                       ),
                     ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      product.shortBody,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+
+                        Icon(Icons.tag, size: 14, color: Colors.grey.shade600),
+
+                        const SizedBox(width: 4),
+
+                        Text(
+                          'ID: ${product.id}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Icon(Icons.person, size: 14, color: Colors.grey.shade600),
+
+                        const SizedBox(width: 4),
+
+                        Text(
+                          'User ${product.userId}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+
+                      ],
+                    ),
+
                   ],
                 ),
               ),
-            ),
-            // Контекстное меню
-            PopupMenuButton<String>(
-              onSelected: (action) => _onAction(action, product),
-              itemBuilder: (_) => const [
-                PopupMenuItem(value: 'view', child: Text('👁 Просмотр')),
-                PopupMenuItem(value: 'edit', child: Text('✏️ Редактировать')),
-                PopupMenuItem(value: 'related', child: Text('🔗 Похожие')),
-                PopupMenuItem(value: 'delete', child: Text('🗑 Удалить')),
-              ],
-            ),
-          ],
+
+              PopupMenuButton<String>(
+                onSelected: (action) => _onAction(action, product),
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: 'view', child: Text('👁 Просмотр')),
+                  PopupMenuItem(value: 'edit', child: Text('✏️ Редактировать')),
+                  PopupMenuItem(value: 'related', child: Text('🔗 Похожие')),
+                  PopupMenuItem(value: 'delete', child: Text('🗑 Удалить')),
+                ],
+              ),
+
+            ],
+          ),
         ),
       ),
     );
@@ -316,20 +348,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             title: const Text('Удалить?'),
-            content: Text('Удалить "${product.title}"?'),
+
+            content: Text('Удалить пост "${product.title}"?'),
+
             actions: [
               TextButton(
+
                   onPressed: () => Navigator.pop(ctx),
                   child: const Text('Отмена')),
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(ctx);
                   _deleteProduct(product);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+
                 child: const Text('Удалить',
                     style: TextStyle(color: Colors.white)),
+
               ),
+
             ],
           ),
         );
@@ -345,19 +384,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
     );
   }
-
-  Widget _placeholder() {
-    return Container(
-      color: Colors.grey.shade200,
-      child: const Icon(Icons.image, color: Colors.grey),
-    );
-  }
 }
 
-// ─────────────────────────────────────────────
-// Экран похожих продуктов
-// GET /products/{id}/related
-// ─────────────────────────────────────────────
 class RelatedProductsScreen extends StatefulWidget {
   final int productId;
   final String productTitle;
@@ -396,7 +424,9 @@ class _RelatedProductsScreenState extends State<RelatedProductsScreen> {
           }
           final products = snapshot.data!;
           if (products.isEmpty) {
-            return const Center(child: Text('Нет похожих продуктов'));
+            return const Center(
+              child: Text('Нет других постов от этого пользователя'),
+            );
           }
           return ListView.builder(
             itemCount: products.length,
@@ -405,32 +435,37 @@ class _RelatedProductsScreenState extends State<RelatedProductsScreen> {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: p.image.startsWith('http')
-                        ? Image.network(p.image,
-                            width: 56, height: 56, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                                width: 56, height: 56,
-                                color: Colors.grey.shade200,
-                                child: const Icon(Icons.image)))
-                        : Container(
-                            width: 56, height: 56,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.image)),
+
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue.shade100,
+                    child: Text(
+                      '${p.id}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
                   ),
+
                   title: Text(p.title,
                       maxLines: 2, overflow: TextOverflow.ellipsis),
-                  subtitle: Text('\$${p.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold)),
+
+                  subtitle: Text(
+                    p.shortBody,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ProductDetailScreen(productId: p.id),
                     ),
                   ),
+                  
                 ),
+
               );
             },
           );

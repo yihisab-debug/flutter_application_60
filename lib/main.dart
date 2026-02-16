@@ -11,10 +11,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Platzi Fake Store — Products',
+      title: 'JSONPlaceholder Posts',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorSchemeSeed: Colors.teal,
+        colorSchemeSeed: Colors.blue,
         useMaterial3: true,
       ),
       home: const ProductListScreen(),
