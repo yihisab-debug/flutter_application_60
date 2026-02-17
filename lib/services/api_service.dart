@@ -5,8 +5,17 @@ import '../models/product.dart';
 class ApiService {
   static const String _baseUrl = 'https://jsonplaceholder.typicode.com';
 
+  static const Map<String, String> _headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'User-Agent':
+        'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+  };
+
   static Future<List<Product>> fetchProducts() async {
-    final response = await http.get(Uri.parse('$_baseUrl/posts'));
+    final response =
+        await http.get(Uri.parse('$_baseUrl/posts'), headers: _headers);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
     return data.map((json) => Product.fromJson(json)).toList();
@@ -22,14 +31,15 @@ class ApiService {
         '_limit': limit.toString(),
       },
     );
-    final response = await http.get(uri);
+    final response = await http.get(uri, headers: _headers);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
     return data.map((json) => Product.fromJson(json)).toList();
   }
 
   static Future<Product> fetchProductById(int id) async {
-    final response = await http.get(Uri.parse('$_baseUrl/posts/$id'));
+    final response = await http.get(
+        Uri.parse('$_baseUrl/posts/$id'), headers: _headers);
     _checkResponse(response);
     return Product.fromJson(json.decode(response.body));
   }
@@ -38,7 +48,7 @@ class ApiService {
     final uri = Uri.parse('$_baseUrl/posts').replace(
       queryParameters: {'userId': userId.toString()},
     );
-    final response = await http.get(uri);
+    final response = await http.get(uri, headers: _headers);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
     return data.map((json) => Product.fromJson(json)).toList();
@@ -51,7 +61,7 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/posts'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers,
       body: json.encode({
         'title': title,
         'body': body,
@@ -66,7 +76,7 @@ class ApiService {
       int id, Map<String, dynamic> fields) async {
     final response = await http.put(
       Uri.parse('$_baseUrl/posts/$id'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers,
       body: json.encode(fields),
     );
     _checkResponse(response);
@@ -77,7 +87,7 @@ class ApiService {
       int id, Map<String, dynamic> fields) async {
     final response = await http.patch(
       Uri.parse('$_baseUrl/posts/$id'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers,
       body: json.encode(fields),
     );
     _checkResponse(response);
@@ -85,23 +95,20 @@ class ApiService {
   }
 
   static Future<bool> deleteProduct(int id) async {
-    final response = await http.delete(Uri.parse('$_baseUrl/posts/$id'));
+    final response = await http.delete(
+        Uri.parse('$_baseUrl/posts/$id'), headers: _headers);
     _checkResponse(response);
-
     return response.statusCode == 200;
   }
 
   static Future<List<Product>> fetchRelatedProducts(int productId) async {
-
     final product = await fetchProductById(productId);
-    
     final uri = Uri.parse('$_baseUrl/posts').replace(
       queryParameters: {'userId': product.userId.toString()},
     );
-    final response = await http.get(uri);
+    final response = await http.get(uri, headers: _headers);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
-    
     return data
         .map((json) => Product.fromJson(json))
         .where((p) => p.id != productId)
@@ -109,14 +116,17 @@ class ApiService {
   }
 
   static Future<List<Map<String, dynamic>>> fetchUsers() async {
-    final response = await http.get(Uri.parse('$_baseUrl/users'));
+    final response =
+        await http.get(Uri.parse('$_baseUrl/users'), headers: _headers);
     _checkResponse(response);
     final List<dynamic> data = json.decode(response.body);
-    return data.map((user) => {
-      'id': user['id'],
-      'name': user['name'],
-      'username': user['username'],
-    }).toList();
+    return data
+        .map((user) => <String, dynamic>{
+              'id': user['id'],
+              'name': user['name'],
+              'username': user['username'],
+            })
+        .toList();
   }
 
   static void _checkResponse(http.Response response) {

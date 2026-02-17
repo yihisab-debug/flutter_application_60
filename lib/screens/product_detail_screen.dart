@@ -40,7 +40,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           }
           if (snapshot.hasError) {
             return Center(
-
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -67,6 +66,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           final product = snapshot.data!;
           return _buildContent(product);
         },
+
       ),
     );
   }
@@ -80,7 +80,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
-            
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -91,7 +90,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ],
               ),
             ),
-
+            
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,6 +141,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   ],
                 ),
+
               ],
             ),
           ),
@@ -171,6 +171,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(16),
                   ),
+
                   child: Text(
                     'Post ID: ${product.id}',
                     style: const TextStyle(
@@ -178,6 +179,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       color: Colors.grey,
                     ),
                   ),
+
                 ),
 
                 const SizedBox(height: 24),
@@ -195,7 +197,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
-
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(12),
@@ -251,7 +252,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () async {
-                          final result = await Navigator.push<bool>(
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
@@ -260,10 +261,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                           if (result == true) setState(() => _load());
                         },
+
                         icon: const Icon(Icons.edit),
+
                         label: const Text('Редактировать'),
+
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
                     ),
@@ -281,10 +286,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ),
+
                         icon: const Icon(Icons.link),
+
                         label: const Text('Похожие'),
+
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
                     ),
@@ -298,8 +307,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () => _confirmDelete(product),
+
                     icon: const Icon(Icons.delete_outline),
+
                     label: const Text('Удалить пост'),
+                    
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(vertical: 12),

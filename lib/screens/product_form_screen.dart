@@ -42,7 +42,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isSubmitting = true);
 
     try {
@@ -66,9 +65,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isEditing
-                ? '✅ Пост обновлён'
-                : '✅ Пост создан'),
+            content: Text(isEditing ? '✅ Пост обновлён' : '✅ Пост создан'),
             backgroundColor: Colors.green,
           ),
         );
@@ -135,7 +132,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
               TextFormField(
                 controller: _titleCtrl,
-
                 decoration: InputDecoration(
                   labelText: 'Заголовок поста',
                   hintText: 'Введите заголовок',
@@ -144,7 +140,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   filled: true,
                   fillColor: Colors.grey.shade50,
                 ),
-
                 maxLines: 2,
                 validator: _required,
                 textCapitalization: TextCapitalization.sentences,
@@ -154,7 +149,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
               TextFormField(
                 controller: _bodyCtrl,
-
                 decoration: InputDecoration(
                   labelText: 'Содержимое поста',
                   hintText: 'Введите текст поста',
@@ -164,7 +158,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   filled: true,
                   fillColor: Colors.grey.shade50,
                 ),
-
                 maxLines: 8,
                 validator: _required,
                 textCapitalization: TextCapitalization.sentences,
@@ -174,7 +167,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
               TextFormField(
                 controller: _userIdCtrl,
-
                 decoration: InputDecoration(
                   labelText: 'ID пользователя',
                   hintText: 'От 1 до 10',
@@ -184,7 +176,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   filled: true,
                   fillColor: Colors.grey.shade50,
                 ),
-
                 keyboardType: TextInputType.number,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
@@ -247,7 +238,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     const SizedBox(width: 12),
 
                     Expanded(
-
                       child: Text(
                         'JSONPlaceholder — это fake REST API для тестирования. '
                         'Запросы POST, PUT, DELETE будут симулированы, но данные '
@@ -257,14 +247,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                           color: Colors.amber.shade900,
                         ),
                       ),
-                  
                     ),
 
                   ],
                 ),
-
               ),
-              
+
             ],
           ),
         ),

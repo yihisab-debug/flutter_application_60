@@ -18,7 +18,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   String? _error;
-
   int _offset = 0;
   static const int _limit = 10;
 
@@ -85,9 +84,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(deleted
-                ? '✅ "${product.title}" удалён'
-                : '⚠️ Не удалось удалить'),
+            content: Text(
+                deleted ? '✅ "${product.title}" удалён' : '⚠️ Не удалось удалить'),
             backgroundColor: deleted ? Colors.green : Colors.orange,
           ),
         );
@@ -124,12 +122,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: _refresh,
           ),
+
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final created = await Navigator.push<bool>(
+          final created = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const ProductFormScreen()),
           );
@@ -142,7 +141,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildBody() {
-   
     if (_products.isEmpty && _isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -194,7 +192,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
               padding: const EdgeInsets.only(bottom: 80),
               itemCount: _products.length + (_hasMore ? 1 : 0),
               itemBuilder: (context, index) {
-
                 if (index == _products.length) {
                   return const Padding(
                     padding: EdgeInsets.all(24),
@@ -240,7 +237,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
+
                     Text(
                       product.title,
                       maxLines: 2,
@@ -282,7 +279,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
                         const SizedBox(width: 12),
 
-                        Icon(Icons.person, size: 14, color: Colors.grey.shade600),
+                        Icon(Icons.person,
+                            size: 14, color: Colors.grey.shade600),
 
                         const SizedBox(width: 4),
 
@@ -313,6 +311,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
             ],
           ),
+
         ),
       ),
     );
@@ -324,7 +323,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         _openDetail(product);
         break;
       case 'edit':
-        final result = await Navigator.push<bool>(
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => ProductFormScreen(product: product),
@@ -348,12 +347,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             title: const Text('Удалить?'),
-
             content: Text('Удалить пост "${product.title}"?'),
-
             actions: [
-              TextButton(
 
+              TextButton(
                   onPressed: () => Navigator.pop(ctx),
                   child: const Text('Отмена')),
 
@@ -362,11 +359,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   Navigator.pop(ctx);
                   _deleteProduct(product);
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text('Удалить',
                     style: TextStyle(color: Colors.white)),
-
               ),
 
             ],
@@ -433,7 +429,8 @@ class _RelatedProductsScreenState extends State<RelatedProductsScreen> {
             itemBuilder: (context, index) {
               final p = products[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
 
                   leading: CircleAvatar(
@@ -460,12 +457,12 @@ class _RelatedProductsScreenState extends State<RelatedProductsScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ProductDetailScreen(productId: p.id),
+                      builder: (_) =>
+                          ProductDetailScreen(productId: p.id),
                     ),
                   ),
                   
                 ),
-
               );
             },
           );

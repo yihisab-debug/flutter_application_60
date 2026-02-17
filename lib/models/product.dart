@@ -1,9 +1,9 @@
 class Product {
   final int id;
   final String title;
-  final String body; // описание (в JSONPlaceholder это "body")
-  final int userId; // вместо category используем userId
-  
+  final String body;
+  final int userId;
+
   Product({
     required this.id,
     required this.title,

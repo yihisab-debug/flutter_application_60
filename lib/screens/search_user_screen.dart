@@ -13,7 +13,6 @@ class SearchUserScreen extends StatefulWidget {
 
 class _SearchUserScreenState extends State<SearchUserScreen> {
   final TextEditingController _userIdCtrl = TextEditingController();
-
   List<Product> _results = [];
   bool _isLoading = false;
   String? _error;
@@ -80,10 +79,8 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                   children: [
 
                     Expanded(
-
                       child: TextField(
                         controller: _userIdCtrl,
-
                         decoration: InputDecoration(
                           labelText: 'User ID',
                           hintText: 'От 1 до 10',
@@ -92,7 +89,6 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                           filled: true,
                           fillColor: Colors.white,
                         ),
-
                         keyboardType: TextInputType.number,
                         onSubmitted: (_) => _search(),
                       ),
@@ -140,7 +136,6 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
   }
 
   Widget _buildResults() {
-
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -182,7 +177,8 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
 
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             color: Colors.blue.shade50,
             child: Text(
               'Найдено постов: ${_results.length}',
@@ -228,7 +224,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
           ),
 
           const SizedBox(height: 8),
-
+          
           Text(
             'Обычно используются ID от 1 до 10',
             style: TextStyle(
@@ -253,7 +249,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -304,14 +300,14 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
 
               Row(
                 children: [
-
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _openDetail(product),
                       icon: const Icon(Icons.open_in_new, size: 18),
                       label: const Text('Подробнее'),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 8),
                       ),
                     ),
                   ),
@@ -324,7 +320,8 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                       icon: const Icon(Icons.link, size: 18),
                       label: const Text('Похожие'),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 8),
                       ),
                     ),
                   ),
