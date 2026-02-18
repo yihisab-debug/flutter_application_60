@@ -83,11 +83,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
       final deleted = await ApiService.deleteProduct(product.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
+
           SnackBar(
             content: Text(
                 deleted ? '✅ "${product.title}" удалён' : '⚠️ Не удалось удалить'),
             backgroundColor: deleted ? Colors.green : Colors.orange,
           ),
+
         );
         if (deleted) {
           setState(() => _products.remove(product));
@@ -182,7 +184,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
             child: Text(
               'Загружено: ${_products.length} '
               '${_hasMore ? "• Прокрутите для загрузки ещё" : "• Всё загружено"}',
+
               style: const TextStyle(fontSize: 12, color: Colors.grey),
+
             ),
           ),
 
@@ -341,6 +345,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ),
           ),
         );
+
         break;
       case 'delete':
         showDialog(
@@ -461,8 +466,8 @@ class _RelatedProductsScreenState extends State<RelatedProductsScreen> {
                           ProductDetailScreen(productId: p.id),
                     ),
                   ),
-                  
                 ),
+                
               );
             },
           );

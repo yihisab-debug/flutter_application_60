@@ -46,7 +46,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     try {
       if (isEditing) {
-
         await ApiService.updateProduct(widget.product!.id, {
           'id': widget.product!.id,
           'title': _titleCtrl.text.trim(),
@@ -54,7 +53,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           'userId': int.tryParse(_userIdCtrl.text.trim()) ?? 1,
         });
       } else {
-
         await ApiService.createProduct(
           title: _titleCtrl.text.trim(),
           body: _bodyCtrl.text.trim(),
@@ -133,9 +131,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               TextFormField(
                 controller: _titleCtrl,
                 decoration: InputDecoration(
+
                   labelText: 'Заголовок поста',
+
                   hintText: 'Введите заголовок',
+
                   prefixIcon: const Icon(Icons.title),
+
                   border: const OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.grey.shade50,
@@ -150,9 +152,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               TextFormField(
                 controller: _bodyCtrl,
                 decoration: InputDecoration(
+
                   labelText: 'Содержимое поста',
+
                   hintText: 'Введите текст поста',
+
                   prefixIcon: const Icon(Icons.article),
+
                   border: const OutlineInputBorder(),
                   alignLabelWithHint: true,
                   filled: true,
@@ -168,14 +174,21 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               TextFormField(
                 controller: _userIdCtrl,
                 decoration: InputDecoration(
+
                   labelText: 'ID пользователя',
+
                   hintText: 'От 1 до 10',
+
                   prefixIcon: const Icon(Icons.person),
+
                   border: const OutlineInputBorder(),
+
                   helperText: 'ID пользователя (обычно от 1 до 10)',
+
                   filled: true,
                   fillColor: Colors.grey.shade50,
                 ),
+
                 keyboardType: TextInputType.number,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
@@ -216,40 +229,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey,
                   elevation: 2,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.shade200),
-                ),
-
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    Icon(Icons.warning_amber, color: Colors.amber.shade700),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Text(
-                        'JSONPlaceholder — это fake REST API для тестирования. '
-                        'Запросы POST, PUT, DELETE будут симулированы, но данные '
-                        'не сохранятся на сервере.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.amber.shade900,
-                        ),
-                      ),
-                    ),
-
-                  ],
                 ),
               ),
 

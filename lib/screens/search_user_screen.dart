@@ -224,7 +224,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
           ),
 
           const SizedBox(height: 8),
-          
+
           Text(
             'Обычно используются ID от 1 до 10',
             style: TextStyle(
@@ -300,6 +300,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
 
               Row(
                 children: [
+
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _openDetail(product),
@@ -325,9 +326,10 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                       ),
                     ),
                   ),
-                  
+
                 ],
               ),
+              
             ],
           ),
         ),
